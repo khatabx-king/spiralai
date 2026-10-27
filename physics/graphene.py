@@ -1,112 +1,98 @@
 """
-SpiralAI - Graphene Physics Engine
+SpiralAI graphene physics tools.
 
-Hackathon work:
-Meta Global AI Developer Hackathon
-Started: 27 October 2026
+Created during the Meta Global AI Developer Hackathon.
 
-IMPORTANT
----------
-This module is new hackathon work.
-
+This module uses published graphene material properties only.
 It does NOT contain equations or derivations from the author's
-unpublished clock-spiral manuscript.
+unpublished pre-hackathon clock-spiral manuscript.
 
-The model here uses published graphene material properties and
-provides theoretical/simulated estimates only.
+All calculated results are theoretical/simulated estimates,
+not experimental measurements.
 """
 
-from dataclasses import dataclass
+GRAPHENE_2D_STIFFNESS = 340.0       # N/m
+GRAPHENE_AREAL_DENSITY = 7.6e-7     # kg/m^2
+GRAPHENE_THIRD_ORDER = -690.0       # N/m
 
 
-# Published graphene material constants
-# 2D elastic stiffness, N/m
-GRAPHENE_E2D = 340.0
-
-# Third-order nonlinear elastic stiffness, N/m
-GRAPHENE_D2D = -690.0
-
-# Areal mass density, kg/m^2
-GRAPHENE_AREAL_DENSITY = 7.6e-7
-
-
-@dataclass
-class GrapheneResult:
-    strain: float
-    strain_percent: float
-    energy_per_area_J_m2: float
-    energy_density_J_kg: float
-    energy_density_Wh_kg: float
-    stress_2d_N_m: float
-
-
-def graphene_energy_density(strain: float) -> GrapheneResult:
+def strain_energy_density(strain: float) -> float:
     """
-    Estimate elastic energy stored in ideal monolayer graphene.
+    Calculate nonlinear elastic strain energy per graphene area.
 
     Parameters
     ----------
     strain:
-        Engineering strain as a decimal.
-        Example: 0.05 means 5%.
+        Engineering strain expressed as a decimal.
+        Example: 0.05 = 5%.
 
     Returns
     -------
-    GrapheneResult
-
-    Notes
-    -----
-    Uses a nonlinear 2D constitutive approximation:
-
-        sigma = E2D * strain + D2D * strain^2
-
-    and its integrated strain-energy density:
-
-        U/A = (E2D/2)*strain^2
-              + (D2D/3)*strain^3
-
-    Results are theoretical estimates for ideal graphene,
-    not experimentally validated device performance.
+    float
+        Elastic energy density in J/m^2.
     """
 
-    if not 0 <= strain <= 0.25:
+    if strain < 0:
+        raise ValueError("Strain cannot be negative.")
+
+    if strain > 0.25:
         raise ValueError(
-            "strain must be between 0 and 0.25 "
-            "(0% to 25%) for this screening model"
+            "Strain exceeds the model's 25% screening limit."
         )
 
-    stress_2d = (
-        GRAPHENE_E2D * strain
-        + GRAPHENE_D2D * strain**2
+    linear = 0.5 * GRAPHENE_2D_STIFFNESS * strain**2
+
+    nonlinear = (
+        GRAPHENE_THIRD_ORDER / 3.0
+    ) * strain**3
+
+    return linear + nonlinear
+
+
+def theoretical_specific_energy(strain: float) -> float:
+    """
+    Theoretical specific elastic energy of active graphene.
+
+    Returns
+    -------
+    float
+        Energy density in Wh/kg.
+    """
+
+    energy_area = strain_energy_density(strain)
+
+    energy_mass = (
+        energy_area / GRAPHENE_AREAL_DENSITY
     )
 
-    energy_area = (
-        0.5 * GRAPHENE_E2D * strain**2
-        + (GRAPHENE_D2D / 3.0) * strain**3
-    )
-
-    energy_J_kg = energy_area / GRAPHENE_AREAL_DENSITY
-    energy_Wh_kg = energy_J_kg / 3600.0
-
-    return GrapheneResult(
-        strain=strain,
-        strain_percent=strain * 100.0,
-        energy_per_area_J_m2=energy_area,
-        energy_density_J_kg=energy_J_kg,
-        energy_density_Wh_kg=energy_Wh_kg,
-        stress_2d_N_m=stress_2d,
-    )
+    return energy_mass / 3600.0
 
 
-if __name__ == "__main__":
-    print("SpiralAI graphene physics screening")
-    print("THEORETICAL / SIMULATED RESULTS\n")
+def system_specific_energy(
+    strain: float,
+    active_mass_fraction: float = 0.30,
+    recovery_efficiency: float = 0.60,
+) -> float:
+    """
+    Estimate system-level specific energy.
 
-    for strain in [0.01, 0.03, 0.05, 0.10]:
-        result = graphene_energy_density(strain)
+    This is a screening estimate, not a validated device prediction.
+    """
 
-        print(
-            f"{result.strain_percent:>5.1f}% strain | "
-            f"{result.energy_density_Wh_kg:>8.2f} Wh/kg | "
-            f"{result.stress_2d_N_m:>7.2f} N/m"
+    if not 0 < active_mass_fraction <= 1:
+        raise ValueError(
+            "Active mass fraction must be between 0 and 1."
         )
+
+    if not 0 < recovery_efficiency <= 1:
+        raise ValueError(
+            "Recovery efficiency must be between 0 and 1."
+        )
+
+    material_energy = theoretical_specific_energy(strain)
+
+    return (
+        material_energy
+        * active_mass_fraction
+        * recovery_efficiency
+    )
