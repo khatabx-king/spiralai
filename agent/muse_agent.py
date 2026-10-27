@@ -16,7 +16,7 @@ from openai import OpenAI
 from agent.tools import evaluate_design
 
 
-MODEL = "meta-models/muse-spark-open"
+MODEL = "meta-models/muse-spark-open-1026"
 
 client = OpenAI(
     api_key=os.environ["BASETEN_API_KEY"],
