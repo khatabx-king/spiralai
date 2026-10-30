@@ -143,7 +143,7 @@ SpiralAI deliberately separates AI reasoning from scientific calculation and ver
 5. Muse proposes a revised candidate.
 6. The process repeats until a justified stopping state is reached.
 
-Architecture:
+```Architecture:
 
 Scientific Target
     |
@@ -170,10 +170,10 @@ Verified Feedback
     |
     v
 Redesign or Stop
-
+```
 The AI cannot change the physics equations or verification rules simply to make a candidate pass.
 
-## Independent Scientific Verification
+### Independent Scientific Verification
 
 SpiralAI does not trust a numerical result simply because an AI generated it.
 
@@ -231,14 +231,14 @@ NO
 
 The intended validation pathway is:
 
-Analytical physics
+```Analytical physics
 -> numerical screening
 -> AI-guided optimization
 -> finite-element / molecular-dynamics validation
 -> fabrication
 -> mechanical cycling
 -> experimental validation
-
+```
 SpiralAI currently operates in the analytical, numerical-screening, and AI-guided-optimization stages.
 
 ## Scientific Limitations
@@ -294,7 +294,7 @@ The separation between prior theoretical research and hackathon development is i
 
 ## Repository Structure
 
-spiralai/
+```spiralai/
 |
 |-- agent/
 |   |-- muse_agent.py
@@ -319,7 +319,7 @@ spiralai/
 |
 |-- README.md
 |-- .gitignore
-
+```
 ## Run SpiralAI
 
 Requirements:
@@ -379,7 +379,7 @@ Track: Indie Developer
 Theme: Push the Frontier
 
 SpiralAI combines:
-
+```
 AI agents
 +
 materials science
@@ -389,7 +389,7 @@ graphene
 mechanical energy storage
 +
 verifiable scientific computing
-
+```
 The project asks:
 
 Can AI generate a promising scientific design?
