@@ -171,7 +171,6 @@ Verified Feedback
     v
 Redesign or Stop
 ```
-The AI cannot change the physics equations or verification rules simply to make a candidate pass.
 
 ### Independent Scientific Verification
 
