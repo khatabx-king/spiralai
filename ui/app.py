@@ -4,13 +4,12 @@ SpiralAI Agent Console.
 Meta Global AI Developer Hackathon 2026.
 
 Visual interface for:
-PLAN -> ACT -> PHYSICS -> VERIFY -> REDESIGN
+PLAN > ACT > PHYSICS > VERIFY > REDESIGN
 
-All current numerical outputs are theoretical/simulated screening
-results and are not experimentally validated device performance.
+All numerical outputs are theoretical or simulated screening results.
+They are not experimentally validated device performance.
 """
 
-from html import escape
 from pathlib import Path
 
 import streamlit as st
@@ -27,6 +26,10 @@ MUSE_BENCHMARK = Path(
 )
 
 
+# ============================================================
+# PAGE CONFIGURATION
+# ============================================================
+
 st.set_page_config(
     page_title="SpiralAI Agent Console",
     page_icon="S",
@@ -41,865 +44,709 @@ st.set_page_config(
 
 st.markdown(
     """
-    <style>
+<style>
 
-    /* --------------------------------
-       CORE COLORS
+/* ==========================================================
+   SPIRALAI COLOR SYSTEM
+   ==========================================================
 
-       Background:   #050B09
-       Panel:        #0D1B18
-       Mint:         #7EE2B8
-       Green:        #42D89C
-       Gold:         #D9A441
-       Soft gold:    #F2C66D
-       Main text:    #F4F7F5
-       Muted text:   #A6B7AF
-       -------------------------------- */
-
-
-    /* APP BACKGROUND */
-
-    .stApp {
-        position: relative;
-        overflow-x: hidden;
-
-        background:
-            radial-gradient(
-                circle at 85% 8%,
-                rgba(66, 216, 156, 0.15),
-                transparent 30%
-            ),
-            radial-gradient(
-                circle at 12% 55%,
-                rgba(217, 164, 65, 0.08),
-                transparent 26%
-            ),
-            linear-gradient(
-                145deg,
-                #050B09 0%,
-                #07110F 45%,
-                #0A1713 100%
-            );
-
-        color: #F4F7F5;
-    }
+   Background:   #050B09
+   Panel:        #0D1B18
+   Mint:         #7EE2B8
+   Green:        #42D89C
+   Gold:         #D9A441
+   Soft gold:    #F2C66D
+   Main text:    #F4F7F5
+   Muted text:   #A6B7AF
+   Border:       #25443A
+*/
 
 
-    /* ANIMATED GRAPHENE HEXAGON BACKGROUND */
+/* APP BACKGROUND */
 
-    .stApp::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
+.stApp {
+    position: relative;
+    overflow-x: hidden;
 
-        background-image:
-            linear-gradient(
-                30deg,
-                rgba(126, 226, 184, 0.055) 12%,
-                transparent 12.5%,
-                transparent 87%,
-                rgba(126, 226, 184, 0.055) 87.5%
-            ),
-            linear-gradient(
-                150deg,
-                rgba(126, 226, 184, 0.055) 12%,
-                transparent 12.5%,
-                transparent 87%,
-                rgba(126, 226, 184, 0.055) 87.5%
-            ),
-            linear-gradient(
-                30deg,
-                rgba(126, 226, 184, 0.055) 12%,
-                transparent 12.5%,
-                transparent 87%,
-                rgba(126, 226, 184, 0.055) 87.5%
-            ),
-            linear-gradient(
-                150deg,
-                rgba(126, 226, 184, 0.055) 12%,
-                transparent 12.5%,
-                transparent 87%,
-                rgba(126, 226, 184, 0.055) 87.5%
-            ),
-            linear-gradient(
-                60deg,
-                rgba(242, 198, 109, 0.035) 25%,
-                transparent 25.5%,
-                transparent 75%,
-                rgba(242, 198, 109, 0.035) 75%
-            );
+    background:
+        radial-gradient(
+            circle at 85% 8%,
+            rgba(66, 216, 156, 0.15),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 12% 55%,
+            rgba(217, 164, 65, 0.08),
+            transparent 26%
+        ),
+        linear-gradient(
+            145deg,
+            #050B09 0%,
+            #07110F 45%,
+            #0A1713 100%
+        );
 
-        background-size:
-            84px 147px;
+    color: #F4F7F5;
+}
 
+
+/* ANIMATED GRAPHENE BACKGROUND */
+
+.stApp::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+
+    background-image:
+        linear-gradient(
+            30deg,
+            rgba(126, 226, 184, 0.055) 12%,
+            transparent 12.5%,
+            transparent 87%,
+            rgba(126, 226, 184, 0.055) 87.5%
+        ),
+        linear-gradient(
+            150deg,
+            rgba(126, 226, 184, 0.055) 12%,
+            transparent 12.5%,
+            transparent 87%,
+            rgba(126, 226, 184, 0.055) 87.5%
+        ),
+        linear-gradient(
+            30deg,
+            rgba(126, 226, 184, 0.055) 12%,
+            transparent 12.5%,
+            transparent 87%,
+            rgba(126, 226, 184, 0.055) 87.5%
+        ),
+        linear-gradient(
+            150deg,
+            rgba(126, 226, 184, 0.055) 12%,
+            transparent 12.5%,
+            transparent 87%,
+            rgba(126, 226, 184, 0.055) 87.5%
+        ),
+        linear-gradient(
+            60deg,
+            rgba(242, 198, 109, 0.035) 25%,
+            transparent 25.5%,
+            transparent 75%,
+            rgba(242, 198, 109, 0.035) 75%
+        );
+
+    background-size: 84px 147px;
+
+    background-position:
+        0 0,
+        0 0,
+        42px 73px,
+        42px 73px,
+        0 0;
+
+    opacity: 0.72;
+
+    animation:
+        graphene-drift 30s linear infinite;
+}
+
+
+/* MOVING SCANNER LIGHT */
+
+.stApp::after {
+    content: "";
+    position: fixed;
+    top: -20%;
+    left: -20%;
+    width: 140%;
+    height: 140%;
+    z-index: 0;
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            110deg,
+            transparent 25%,
+            rgba(126, 226, 184, 0.025) 46%,
+            rgba(126, 226, 184, 0.10) 50%,
+            rgba(242, 198, 109, 0.035) 53%,
+            transparent 75%
+        );
+
+    animation:
+        scanner-sweep 12s ease-in-out infinite;
+}
+
+
+/* ANIMATIONS */
+
+@keyframes graphene-drift {
+    0% {
         background-position:
             0 0,
             0 0,
             42px 73px,
             42px 73px,
             0 0;
-
-        opacity: 0.7;
-
-        animation:
-            graphene-drift 30s linear infinite;
     }
 
+    100% {
+        background-position:
+            84px 147px,
+            84px 147px,
+            126px 220px,
+            126px 220px,
+            84px 147px;
+    }
+}
 
-    .stApp::after {
-        content: "";
-        position: fixed;
-        top: -20%;
-        left: -20%;
-        width: 140%;
-        height: 140%;
-        z-index: 0;
-        pointer-events: none;
 
-        background:
-            linear-gradient(
-                110deg,
-                transparent 25%,
-                rgba(126, 226, 184, 0.025) 46%,
-                rgba(126, 226, 184, 0.10) 50%,
-                rgba(242, 198, 109, 0.035) 53%,
-                transparent 75%
-            );
-
-        animation:
-            scanner-sweep 12s ease-in-out infinite;
+@keyframes scanner-sweep {
+    0%,
+    100% {
+        transform: translateX(-35%);
+        opacity: 0.15;
     }
 
-
-    @keyframes graphene-drift {
-        0% {
-            background-position:
-                0 0,
-                0 0,
-                42px 73px,
-                42px 73px,
-                0 0;
-        }
-
-        100% {
-            background-position:
-                84px 147px,
-                84px 147px,
-                126px 220px,
-                126px 220px,
-                84px 147px;
-        }
+    50% {
+        transform: translateX(35%);
+        opacity: 0.75;
     }
+}
 
 
-    @keyframes scanner-sweep {
-        0%,
-        100% {
-            transform: translateX(-35%);
-            opacity: 0.15;
-        }
-
-        50% {
-            transform: translateX(35%);
-            opacity: 0.75;
-        }
-    }
-
-
-    @keyframes led-pulse {
-        0%,
-        100% {
-            opacity: 0.55;
-            box-shadow:
-                0 0 4px rgba(126, 226, 184, 0.40);
-        }
-
-        50% {
-            opacity: 1;
-            box-shadow:
-                0 0 8px #7EE2B8,
-                0 0 18px rgba(126, 226, 184, 0.85),
-                0 0 28px rgba(66, 216, 156, 0.35);
-        }
-    }
-
-
-    @keyframes gold-pulse {
-        0%,
-        100% {
-            opacity: 0.60;
-            box-shadow:
-                0 0 4px rgba(242, 198, 109, 0.40);
-        }
-
-        50% {
-            opacity: 1;
-            box-shadow:
-                0 0 8px #F2C66D,
-                0 0 18px rgba(242, 198, 109, 0.70);
-        }
-    }
-
-
-    @keyframes border-glow {
-        0%,
-        100% {
-            border-color:
-                rgba(37, 68, 58, 0.80);
-        }
-
-        50% {
-            border-color:
-                rgba(126, 226, 184, 0.55);
-        }
-    }
-
-
-    /* KEEP STREAMLIT CONTENT ABOVE BACKGROUND */
-
-    [data-testid="stAppViewContainer"],
-    [data-testid="stMain"],
-    .block-container {
-        position: relative;
-        z-index: 2;
-    }
-
-
-    .block-container {
-        max-width: 1450px;
-        padding-top: 1.5rem;
-        padding-bottom: 3rem;
-    }
-
-
-    header[data-testid="stHeader"] {
-        background:
-            rgba(5, 11, 9, 0.25);
-        backdrop-filter:
-            blur(10px);
-    }
-
-
-    /* TYPOGRAPHY */
-
-    h1 {
-        color: #F4F7F5 !important;
-        font-weight: 850 !important;
-        letter-spacing: -0.035em;
-        text-shadow:
-            0 0 22px rgba(126, 226, 184, 0.12);
-    }
-
-
-    h2,
-    h3 {
-        color: #F4F7F5 !important;
-    }
-
-
-    p {
-        color: #A6B7AF;
-    }
-
-
-    /* HERO TITLE ACCENT */
-
-    .hero-accent {
-        color: #7EE2B8;
-        text-shadow:
-            0 0 18px rgba(126, 226, 184, 0.30);
-    }
-
-
-    /* SYSTEM STATUS STRIP */
-
-    .system-strip {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 14px;
-        align-items: center;
-
-        margin:
-            12px 0 22px 0;
-
-        padding:
-            11px 16px;
-
-        background:
-            rgba(13, 27, 24, 0.86);
-
-        border:
-            1px solid #25443A;
-
-        border-radius:
-            12px;
-
-        backdrop-filter:
-            blur(12px);
-    }
-
-
-    .system-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-
-        color: #A6B7AF;
-        font-size: 0.82rem;
-        font-weight: 650;
-        letter-spacing: 0.04em;
-    }
-
-
-    .led {
-        display: inline-block;
-        width: 9px;
-        height: 9px;
-        border-radius: 50%;
-
-        background:
-            #7EE2B8;
-
-        animation:
-            led-pulse 2.2s ease-in-out infinite;
-    }
-
-
-    .led-gold {
-        display: inline-block;
-        width: 9px;
-        height: 9px;
-        border-radius: 50%;
-
-        background:
-            #F2C66D;
-
-        animation:
-            gold-pulse 2.8s ease-in-out infinite;
-    }
-
-
-    /* SCIENTIFIC WARNING */
-
-    .scientific-warning {
-        background:
-            linear-gradient(
-                90deg,
-                rgba(19, 36, 31, 0.94),
-                rgba(24, 37, 30, 0.88)
-            );
-
-        border:
-            1px solid #D9A441;
-
-        border-left:
-            5px solid #F2C66D;
-
-        border-radius:
-            12px;
-
-        padding:
-            14px 18px;
-
-        color:
-            #F2C66D;
+@keyframes led-pulse {
+    0%,
+    100% {
+        opacity: 0.55;
 
         box-shadow:
-            0 6px 24px rgba(0, 0, 0, 0.22),
-            0 0 22px rgba(217, 164, 65, 0.06);
-
-        backdrop-filter:
-            blur(12px);
+            0 0 4px rgba(126, 226, 184, 0.40);
     }
 
-
-    /* CARDS */
-
-    .spiral-card {
-        position: relative;
-
-        background:
-            linear-gradient(
-                145deg,
-                rgba(13, 27, 24, 0.96),
-                rgba(16, 32, 28, 0.90)
-            );
-
-        border:
-            1px solid #25443A;
-
-        border-radius:
-            14px;
-
-        padding:
-            20px;
-
-        margin-bottom:
-            14px;
+    50% {
+        opacity: 1;
 
         box-shadow:
-            0 10px 28px rgba(0, 0, 0, 0.24);
-
-        backdrop-filter:
-            blur(12px);
-
-        animation:
-            border-glow 6s ease-in-out infinite;
+            0 0 8px #7EE2B8,
+            0 0 18px rgba(126, 226, 184, 0.85),
+            0 0 28px rgba(66, 216, 156, 0.35);
     }
+}
 
 
-    .spiral-card::after {
-        content: "";
-        position: absolute;
-        top: 10px;
-        right: 12px;
-
-        width: 7px;
-        height: 7px;
-
-        border-radius: 50%;
-
-        background:
-            #7EE2B8;
-
-        animation:
-            led-pulse 2.5s ease-in-out infinite;
-    }
-
-
-    .success-card {
-        border-left:
-            6px solid #42D89C;
-    }
-
-
-    .warning-card {
-        border-left:
-            6px solid #F2C66D;
-    }
-
-
-    .warning-card::after {
-        background:
-            #F2C66D;
-
-        animation:
-            gold-pulse 2.8s ease-in-out infinite;
-    }
-
-
-    .fail-card {
-        border-left:
-            6px solid #D9A441;
-    }
-
-
-    /* STAGES */
-
-    .stage {
-        color:
-            #7EE2B8;
-
-        font-size:
-            0.80rem;
-
-        font-weight:
-            800;
-
-        letter-spacing:
-            0.14em;
-    }
-
-
-    .stage-label {
-        display: inline-block;
-
-        min-width:
-            86px;
-
-        margin-bottom:
-            3px;
-
-        color:
-            #F2C66D;
-
-        font-size:
-            0.76rem;
-
-        font-weight:
-            800;
-
-        letter-spacing:
-            0.09em;
-    }
-
-
-    /* FINAL STATUS */
-
-    .final-status {
-        display: inline-block;
-
-        margin-top:
-            5px;
-
-        padding:
-            6px 10px;
-
-        border-radius:
-            7px;
-
-        font-size:
-            1.06rem;
-
-        font-weight:
-            850;
-
-        letter-spacing:
-            0.035em;
-    }
-
-
-    .success-card .final-status {
-        color:
-            #07110F;
-
-        background:
-            linear-gradient(
-                90deg,
-                #42D89C,
-                #7EE2B8
-            );
-    }
-
-
-    .warning-card .final-status {
-        color:
-            #171005;
-
-        background:
-            linear-gradient(
-                90deg,
-                #D9A441,
-                #F2C66D
-            );
-    }
-
-
-    .fail-card .final-status {
-        color:
-            #F2C66D;
-
-        border:
-            1px solid #D9A441;
-
-        background:
-            rgba(217, 164, 65, 0.10);
-    }
-
-
-    /* METRIC CARDS */
-
-    [data-testid="stMetric"] {
-        position: relative;
-
-        min-height:
-            112px;
-
-        background:
-            linear-gradient(
-                145deg,
-                rgba(13, 27, 24, 0.97),
-                rgba(19, 36, 31, 0.92)
-            );
-
-        border:
-            1px solid #25443A;
-
-        border-radius:
-            14px;
-
-        padding:
-            16px 18px;
+@keyframes gold-pulse {
+    0%,
+    100% {
+        opacity: 0.60;
 
         box-shadow:
-            0 8px 22px rgba(0, 0, 0, 0.20);
-
-        backdrop-filter:
-            blur(10px);
+            0 0 4px rgba(242, 198, 109, 0.40);
     }
 
-
-    [data-testid="stMetric"]::before {
-        content: "";
-        position: absolute;
-        top: 13px;
-        right: 13px;
-
-        width: 8px;
-        height: 8px;
-
-        border-radius: 50%;
-
-        background:
-            #7EE2B8;
-
-        animation:
-            led-pulse 2.4s ease-in-out infinite;
-    }
-
-
-    [data-testid="stMetricLabel"] {
-        color:
-            #A6B7AF !important;
-
-        font-weight:
-            650 !important;
-    }
-
-
-    [data-testid="stMetricValue"] {
-        color:
-            #7EE2B8 !important;
-
-        font-size:
-            1.65rem !important;
-
-        font-weight:
-            820 !important;
-
-        text-shadow:
-            0 0 14px rgba(126, 226, 184, 0.15);
-    }
-
-
-    /* NUMBER INPUT */
-
-    [data-testid="stNumberInput"] label {
-        color:
-            #A6B7AF !important;
-
-        font-weight:
-            650;
-    }
-
-
-    [data-testid="stNumberInput"] input {
-        background-color:
-            #0D1B18 !important;
-
-        color:
-            #F4F7F5 !important;
-
-        border:
-            1px solid #25443A !important;
-    }
-
-
-    /* RADIO BUTTONS */
-
-    [data-testid="stRadio"] label {
-        color:
-            #F4F7F5 !important;
-    }
-
-
-    /* BUTTON */
-
-    .stButton
-    > button[kind="primary"] {
-        min-height:
-            50px;
-
-        background:
-            linear-gradient(
-                90deg,
-                #42D89C,
-                #7EE2B8
-            ) !important;
-
-        color:
-            #07110F !important;
-
-        border:
-            1px solid
-            rgba(126, 226, 184, 0.70) !important;
-
-        border-radius:
-            11px !important;
-
-        font-weight:
-            850 !important;
-
-        letter-spacing:
-            0.025em;
+    50% {
+        opacity: 1;
 
         box-shadow:
-            0 0 12px rgba(66, 216, 156, 0.24),
-            0 8px 24px rgba(0, 0, 0, 0.18);
+            0 0 8px #F2C66D,
+            0 0 18px rgba(242, 198, 109, 0.70);
+    }
+}
+
+
+/* KEEP CONTENT ABOVE BACKGROUND */
+
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+.block-container {
+    position: relative;
+    z-index: 2;
+}
+
+
+.block-container {
+    max-width: 1450px;
+    padding-top: 1.5rem;
+    padding-bottom: 3rem;
+}
+
+
+header[data-testid="stHeader"] {
+    background:
+        rgba(5, 11, 9, 0.25);
+
+    backdrop-filter:
+        blur(10px);
+}
+
+
+/* TYPOGRAPHY */
+
+h1 {
+    color: #F4F7F5 !important;
+    font-weight: 850 !important;
+    letter-spacing: -0.035em;
+
+    text-shadow:
+        0 0 22px rgba(126, 226, 184, 0.12);
+}
+
+
+h2,
+h3 {
+    color: #F4F7F5 !important;
+}
+
+
+p {
+    color: #A6B7AF;
+}
+
+
+.hero-accent {
+    color: #7EE2B8;
+
+    text-shadow:
+        0 0 18px rgba(126, 226, 184, 0.30);
+}
+
+
+/* SYSTEM STATUS STRIP */
+
+.system-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+
+    margin: 12px 0 22px 0;
+    padding: 11px 16px;
+
+    background:
+        rgba(13, 27, 24, 0.86);
+
+    border:
+        1px solid #25443A;
+
+    border-radius:
+        12px;
+
+    backdrop-filter:
+        blur(12px);
+}
+
+
+.system-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    color: #A6B7AF;
+    font-size: 0.82rem;
+    font-weight: 650;
+    letter-spacing: 0.04em;
+}
+
+
+.led {
+    display: inline-block;
+
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background:
+        #7EE2B8;
+
+    animation:
+        led-pulse 2.2s ease-in-out infinite;
+}
+
+
+.led-gold {
+    display: inline-block;
+
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background:
+        #F2C66D;
+
+    animation:
+        gold-pulse 2.8s ease-in-out infinite;
+}
+
+
+/* SCIENTIFIC STATUS */
+
+.scientific-warning {
+    background:
+        linear-gradient(
+            90deg,
+            rgba(19, 36, 31, 0.94),
+            rgba(24, 37, 30, 0.88)
+        );
+
+    border:
+        1px solid #D9A441;
+
+    border-left:
+        5px solid #F2C66D;
+
+    border-radius:
+        12px;
+
+    padding:
+        14px 18px;
+
+    color:
+        #F2C66D;
+
+    box-shadow:
+        0 6px 24px rgba(0, 0, 0, 0.22),
+        0 0 22px rgba(217, 164, 65, 0.06);
+
+    backdrop-filter:
+        blur(12px);
+}
+
+
+/* NATIVE STREAMLIT CONTAINERS */
+
+[data-testid="stVerticalBlockBorderWrapper"] {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(13, 27, 24, 0.96),
+            rgba(16, 32, 28, 0.90)
+        );
+
+    border-color:
+        #25443A !important;
+
+    border-radius:
+        14px !important;
+
+    box-shadow:
+        0 10px 28px rgba(0, 0, 0, 0.22);
+
+    backdrop-filter:
+        blur(12px);
+}
+
+
+/* METRIC CARDS */
+
+[data-testid="stMetric"] {
+    position: relative;
+
+    min-height:
+        112px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(13, 27, 24, 0.97),
+            rgba(19, 36, 31, 0.92)
+        );
+
+    border:
+        1px solid #25443A;
+
+    border-radius:
+        14px;
+
+    padding:
+        16px 18px;
+
+    box-shadow:
+        0 8px 22px rgba(0, 0, 0, 0.20);
+
+    backdrop-filter:
+        blur(10px);
+}
+
+
+[data-testid="stMetric"]::before {
+    content: "";
+    position: absolute;
+    top: 13px;
+    right: 13px;
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background:
+        #7EE2B8;
+
+    animation:
+        led-pulse 2.4s ease-in-out infinite;
+}
+
+
+[data-testid="stMetricLabel"] {
+    color:
+        #A6B7AF !important;
+
+    font-weight:
+        650 !important;
+}
+
+
+[data-testid="stMetricValue"] {
+    color:
+        #7EE2B8 !important;
+
+    font-size:
+        1.65rem !important;
+
+    font-weight:
+        820 !important;
+
+    text-shadow:
+        0 0 14px rgba(126, 226, 184, 0.15);
+}
+
+
+/* INPUT */
+
+[data-testid="stNumberInput"] label {
+    color:
+        #A6B7AF !important;
+
+    font-weight:
+        650;
+}
+
+
+[data-testid="stNumberInput"] input {
+    background-color:
+        #0D1B18 !important;
+
+    color:
+        #F4F7F5 !important;
+
+    border:
+        1px solid #25443A !important;
+}
+
+
+/* RADIO BUTTONS */
+
+[data-testid="stRadio"] label {
+    color:
+        #F4F7F5 !important;
+}
+
+
+/* PRIMARY BUTTON */
+
+.stButton > button[kind="primary"] {
+    min-height:
+        50px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #42D89C,
+            #7EE2B8
+        ) !important;
+
+    color:
+        #07110F !important;
+
+    border:
+        1px solid
+        rgba(126, 226, 184, 0.70) !important;
+
+    border-radius:
+        11px !important;
+
+    font-weight:
+        850 !important;
+
+    letter-spacing:
+        0.025em;
+
+    box-shadow:
+        0 0 12px rgba(66, 216, 156, 0.24),
+        0 8px 24px rgba(0, 0, 0, 0.18);
+
+    transition:
+        all 0.25s ease;
+}
+
+
+.stButton > button[kind="primary"]:hover {
+    color:
+        #07110F !important;
+
+    background:
+        linear-gradient(
+            90deg,
+            #7EE2B8,
+            #F2C66D
+        ) !important;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 0 18px rgba(126, 226, 184, 0.34),
+        0 10px 28px rgba(0, 0, 0, 0.22);
+}
+
+
+/* ARCHITECTURE PANEL */
+
+.architecture-card {
+    background:
+        rgba(13, 27, 24, 0.94);
+
+    border:
+        1px solid #25443A;
+
+    border-radius:
+        14px;
+
+    padding:
+        18px;
+
+    text-align:
+        center;
+
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.20);
+}
+
+
+.architecture-title {
+    color:
+        #A6B7AF;
+
+    font-size:
+        0.72rem;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        0.12em;
+
+    margin-bottom:
+        12px;
+}
+
+
+.architecture-node {
+    padding:
+        9px 12px;
+
+    border:
+        1px solid #25443A;
+
+    border-radius:
+        8px;
+
+    color:
+        #F4F7F5;
+
+    font-weight:
+        750;
+
+    background:
+        #10201C;
+}
+
+
+.architecture-node.mint {
+    color:
+        #7EE2B8;
+
+    border-color:
+        #42D89C;
+}
+
+
+.architecture-node.gold {
+    color:
+        #F2C66D;
+
+    border-color:
+        #D9A441;
+}
+
+
+.architecture-arrow {
+    color:
+        #7EE2B8;
+
+    padding:
+        6px 0;
+
+    font-size:
+        1.1rem;
+
+    font-weight:
+        800;
+}
+
+
+/* ALERT BOXES */
+
+[data-testid="stAlert"] {
+    background:
+        rgba(19, 36, 31, 0.95) !important;
+
+    border:
+        1px solid #25443A !important;
+
+    color:
+        #F4F7F5 !important;
+}
+
+
+hr {
+    border-color:
+        #25443A !important;
+
+    opacity:
+        0.72;
+}
+
+
+small,
+.stCaption {
+    color:
+        #A6B7AF !important;
+}
+
+
+/* REDUCED MOTION */
+
+@media (
+    prefers-reduced-motion:
+    reduce
+) {
+    *,
+    *::before,
+    *::after {
+        animation:
+            none !important;
 
         transition:
-            all 0.25s ease;
+            none !important;
     }
+}
 
-
-    .stButton
-    > button[kind="primary"]:hover {
-        color:
-            #07110F !important;
-
-        background:
-            linear-gradient(
-                90deg,
-                #7EE2B8,
-                #F2C66D
-            ) !important;
-
-        transform:
-            translateY(-1px);
-
-        box-shadow:
-            0 0 18px rgba(126, 226, 184, 0.34),
-            0 10px 28px rgba(0, 0, 0, 0.22);
-    }
-
-
-    /* ARCHITECTURE CARD */
-
-    .architecture-card {
-        position: relative;
-        isolation: isolate;
-        overflow: hidden;
-        max-width: 460px;
-        margin: 0 auto;
-        padding: 18px;
-        background:
-            radial-gradient(
-                circle at 50% 0%,
-                rgba(66, 216, 156, 0.10),
-                transparent 48%
-            ),
-            linear-gradient(
-                160deg,
-                rgba(16, 32, 28, 0.98),
-                rgba(8, 18, 15, 0.98)
-            );
-        border: 1px solid #25443A;
-        border-radius: 14px;
-        text-align: center;
-        box-shadow:
-            0 12px 30px rgba(0, 0, 0, 0.28),
-            inset 0 1px 0 rgba(244, 247, 245, 0.04);
-    }
-
-    .architecture-kicker {
-        margin-bottom: 14px;
-        color: #A6B7AF;
-        font-size: 0.68rem;
-        font-weight: 700;
-        letter-spacing: 0.16em;
-    }
-
-    .architecture-node {
-        width: 100%;
-        max-width: 320px;
-        margin: 0 auto;
-        padding: 10px 12px;
-        border: 1px solid #25443A;
-        border-radius: 9px;
-        color: #F4F7F5;
-        font-size: 0.76rem;
-        font-weight: 750;
-        letter-spacing: 0.04em;
-        line-height: 1.35;
-        background:
-            linear-gradient(
-                135deg,
-                rgba(16, 32, 28, 0.98),
-                rgba(13, 27, 24, 0.98)
-            );
-        box-shadow:
-            inset 0 1px 0 rgba(244, 247, 245, 0.035),
-            0 4px 12px rgba(0, 0, 0, 0.14);
-    }
-
-    .architecture-node.mint {
-        border-color: #42D89C;
-        color: #7EE2B8;
-        box-shadow:
-            inset 0 0 18px rgba(66, 216, 156, 0.05),
-            0 0 16px rgba(126, 226, 184, 0.10);
-    }
-
-    .architecture-node.gold {
-        border-color: #D9A441;
-        color: #F2C66D;
-        box-shadow:
-            inset 0 0 18px rgba(217, 164, 65, 0.05),
-            0 0 16px rgba(242, 198, 109, 0.10);
-    }
-
-    .architecture-arrow {
-        color: #7EE2B8;
-        line-height: 1;
-        padding: 6px 0;
-        font-family: monospace;
-        font-size: 0.8rem;
-        font-weight: 700;
-        opacity: 0.82;
-    }
-
-
-    /* ALERTS */
-
-    [data-testid="stAlert"] {
-        background:
-            rgba(19, 36, 31, 0.95) !important;
-
-        border:
-            1px solid #25443A !important;
-
-        color:
-            #F4F7F5 !important;
-    }
-
-
-    hr {
-        border-color:
-            #25443A !important;
-
-        opacity:
-            0.72;
-    }
-
-
-    small,
-    .stCaption {
-        color:
-            #A6B7AF !important;
-    }
-
-
-    /* REDUCED MOTION ACCESSIBILITY */
-
-    @media (
-        prefers-reduced-motion:
-        reduce
-    ) {
-        *,
-        *::before,
-        *::after {
-            animation:
-                none !important;
-
-            transition:
-                none !important;
-        }
-    }
-
-    </style>
-    """,
+</style>
+""",
     unsafe_allow_html=True,
 )
 
@@ -909,44 +756,37 @@ st.markdown(
 # ============================================================
 
 
-def status_class(
-    status: str,
-) -> str:
-    """Map scientific outcomes to visual status classes."""
+def find_replay_run(
+    records: list[dict],
+    target: float,
+) -> dict | None:
+    """Return the first saved Muse trajectory matching a target."""
 
-    if status in {
-        "TARGET_REACHED",
-        "MINIMUM_STRAIN_FOUND",
-    }:
-        return "success-card"
+    matches = [
+        record
+        for record in records
+        if abs(
+            float(
+                record.get(
+                    "target_Wh_kg",
+                    -1,
+                )
+            )
+            - target
+        )
+        < 1e-6
+    ]
 
-    if status in {
-        "TARGET_NOT_REACHED",
-        "MORE_VALIDATION_REQUIRED",
-        "TARGET_UNREACHABLE_WITHIN_SCREENING_BOUNDARY",
-        "MAX_ITERATIONS_REACHED",
-        "NO_IMPROVEMENT",
-    }:
-        return "warning-card"
+    if not matches:
+        return None
 
-    return "fail-card"
-
-
-def format_iteration_name(
-    iteration,
-) -> str:
-    """Format numerical and feasibility-check iteration names."""
-
-    if iteration == 0:
-        return "FEASIBILITY CHECK"
-
-    return f"ITERATION {iteration}"
+    return matches[0]
 
 
 def render_iteration(
     record: dict,
 ) -> None:
-    """Render one verified agent or optimization step."""
+    """Render one scientific-design step with native Streamlit."""
 
     iteration = record.get(
         "iteration",
@@ -991,9 +831,18 @@ def render_iteration(
         "UNKNOWN",
     )
 
-    css = status_class(
-        status
-    )
+    if isinstance(
+        strain,
+        (int, float),
+    ):
+        strain_text = (
+            f"{strain:.3f}%"
+        )
+
+    else:
+        strain_text = str(
+            strain
+        )
 
     if isinstance(
         energy,
@@ -1004,146 +853,195 @@ def render_iteration(
         )
 
     else:
-        energy_text = escape(
-            str(energy)
+        energy_text = str(
+            energy
         )
 
-    if isinstance(
-        strain,
-        (int, float),
+    if iteration == 0:
+        title = "FEASIBILITY CHECK"
+
+    else:
+        title = (
+            f"ITERATION {iteration}"
+        )
+
+    successful_states = {
+        "TARGET_REACHED",
+        "MINIMUM_STRAIN_FOUND",
+    }
+
+    caution_states = {
+        "TARGET_NOT_REACHED",
+        "MORE_VALIDATION_REQUIRED",
+        "TARGET_UNREACHABLE_WITHIN_SCREENING_BOUNDARY",
+        "MAX_ITERATIONS_REACHED",
+        "NO_IMPROVEMENT",
+    }
+
+    with st.container(
+        border=True,
     ):
-        strain_text = (
-            f"{strain:.3f}%"
+        st.markdown(
+            f"### {title}"
+        )
+
+        st.caption(
+            "PLAN"
+        )
+
+        st.write(
+            reason
+        )
+
+        action_column, physics_column = (
+            st.columns(2)
+        )
+
+        with action_column:
+            st.caption(
+                "ACT"
+            )
+
+            st.markdown(
+                f"**{strain_text} strain**"
+            )
+
+        with physics_column:
+            st.caption(
+                "PHYSICS"
+            )
+
+            st.markdown(
+                f"**{energy_text}**"
+            )
+
+        st.caption(
+            "VERIFY"
+        )
+
+        if status in successful_states:
+            st.success(
+                f"VERIFIED: {status}"
+            )
+
+        elif status in caution_states:
+            st.warning(
+                f"SCIENTIFIC OUTCOME: {status}"
+            )
+
+        else:
+            st.error(
+                f"INVALID OR FAILED: {status}"
+            )
+
+
+def render_replay(
+    selected: dict,
+    fallback: bool = False,
+) -> None:
+    """Render one provenance-backed Muse trajectory."""
+
+    if fallback:
+        st.warning(
+            "Live Muse is unavailable. "
+            "Displaying a provenance-backed real Muse trajectory."
         )
 
     else:
-        strain_text = escape(
-            str(strain)
+        st.success(
+            "Loaded provenance-backed Muse trajectory. "
+            "No live API call was required."
         )
 
-    safe_reason = escape(
-        str(reason)
+    metadata_left, metadata_right = (
+        st.columns(2)
     )
 
-    safe_status = escape(
-        str(status)
+    metadata_left.caption(
+        f"Run ID: {selected['run_id']}"
     )
 
-    iteration_name = (
-        format_iteration_name(
-            iteration
+    metadata_right.caption(
+        f"Model: {selected['model']}"
+    )
+
+    for item in selected.get(
+        "history",
+        [],
+    ):
+        render_iteration(
+            item
         )
+
+    st.divider()
+
+    status_column, iterations_column, evidence_column = (
+        st.columns(3)
     )
 
-    st.markdown(
-        f"""
-        <div class="spiral-card {css}">
-
-            <div class="stage">
-                {iteration_name}
-            </div>
-
-
-            <span class="stage-label">
-                PLAN
-            </span>
-            {safe_reason}
-
-            <br><br>
-
-            <span class="stage-label">
-                ACT
-            </span>
-            Proposed strain:
-            <b>{strain_text}</b>
-
-            <br><br>
-
-            <span class="stage-label">
-                PHYSICS
-            </span>
-            Verified system estimate:
-            <b>{energy_text}</b>
-
-            <br><br>
-
-            <span class="stage-label">
-                VERIFY
-            </span>
-
-            <span class="final-status">
-                {safe_status}
-            </span>
-
-        </div>
-        """,
-        unsafe_allow_html=True,
+    status_column.metric(
+        "Final status",
+        selected["final_status"],
     )
 
+    iterations_column.metric(
+        "Iterations",
+        selected["iterations"],
+    )
 
-def find_replay_run(
-    records: list[dict],
-    target: float,
-) -> dict | None:
-    """Return the first benchmark trajectory matching a target."""
+    evidence_column.metric(
+        "Evidence",
+        selected["evidence_type"],
+    )
 
-    matches = [
-        record
-        for record in records
-        if abs(
-            float(
-                record.get(
-                    "target_Wh_kg",
-                    -1,
-                )
-            )
-            - target
+    if fallback:
+        st.caption(
+            "Fallback uses provenance captured from an earlier "
+            "live Muse execution. No synthetic run was generated."
         )
-        < 1e-6
-    ]
-
-    if not matches:
-        return None
-
-    return matches[0]
 
 
 # ============================================================
 # HEADER
 # ============================================================
 
-
 st.title(
     "SpiralAI"
 )
 
-
 st.markdown(
-    """
-    <h3 class="hero-accent">
-        AI designs. Physics verifies.
-    </h3>
-    """,
+    '<h3 class="hero-accent">'
+    'AI designs. Physics verifies.'
+    '</h3>',
     unsafe_allow_html=True,
 )
-
 
 st.caption(
     "Physics-verified scientific design agent "
     "for graphene mechanical energy storage."
 )
 
-
 st.markdown(
     '<div class="system-strip">'
-    '<div class="system-item"><span class="led"></span>PHYSICS ENGINE ONLINE</div>'
-    '<div class="system-item"><span class="led"></span>VERIFIER ONLINE</div>'
-    '<div class="system-item"><span class="led"></span>PROVENANCE READY</div>'
-    '<div class="system-item"><span class="led-gold"></span>THEORETICAL SCREENING</div>'
+    '<div class="system-item">'
+    '<span class="led"></span>'
+    'PHYSICS ENGINE ONLINE'
+    '</div>'
+    '<div class="system-item">'
+    '<span class="led"></span>'
+    'VERIFIER ONLINE'
+    '</div>'
+    '<div class="system-item">'
+    '<span class="led"></span>'
+    'PROVENANCE READY'
+    '</div>'
+    '<div class="system-item">'
+    '<span class="led-gold"></span>'
+    'THEORETICAL SCREENING'
+    '</div>'
     '</div>',
     unsafe_allow_html=True,
 )
-
 
 st.markdown(
     '<div class="scientific-warning">'
@@ -1153,7 +1051,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
 st.write("")
 
 
@@ -1161,41 +1058,34 @@ st.write("")
 # TOP METRICS
 # ============================================================
 
-
-top1, top2, top3, top4 = st.columns(
-    4
+top1, top2, top3, top4 = (
+    st.columns(4)
 )
-
 
 top1.metric(
     "Model",
     "Muse Spark",
 )
 
-
 top2.metric(
     "Automated tests",
     "47 passed",
 )
-
 
 top3.metric(
     "Live benchmark",
     "9 trajectories",
 )
 
-
 top4.metric(
     "Physics provenance",
     "100%",
 )
 
-
 st.caption(
     "Official hackathon model: "
-    "`meta-models/muse-spark-open-1026`"
+    f"`{MODEL}`"
 )
-
 
 st.divider()
 
@@ -1203,7 +1093,6 @@ st.divider()
 # ============================================================
 # MAIN LAYOUT
 # ============================================================
-
 
 left, right = st.columns(
     [
@@ -1218,9 +1107,7 @@ left, right = st.columns(
 # LEFT CONTROL PANEL
 # ============================================================
 
-
 with left:
-
     st.header(
         "Design Objective"
     )
@@ -1244,22 +1131,21 @@ with left:
 
     if mode == "Live Muse":
         st.info(
-            "Live Muse calls the official hackathon model "
-            "`meta-models/muse-spark-open-1026` through Baseten. "
-            "All numerical results are still calculated by the "
-            "deterministic physics engine and checked by the verifier."
+            "Calls the official Muse Spark Open-1026 model through "
+            "Baseten. Physics calculations and verification remain "
+            "deterministic and independent."
         )
 
     elif mode == "Deterministic optimization":
         st.info(
-            "Deterministic optimization finds the lowest verified "
-            "strain satisfying the requested target."
+            "Finds the lowest verified strain satisfying the "
+            "requested energy target."
         )
 
     else:
         st.info(
-            "Provenance replay loads a previously recorded real Muse "
-            "trajectory without making a live API call."
+            "Loads a previously recorded real Muse trajectory "
+            "without making a live API call."
         )
 
     run_button = st.button(
@@ -1275,20 +1161,38 @@ with left:
     )
 
     st.markdown(
-        """
-        <div class="architecture-card">
-            <div class="architecture-kicker">DESIGN TO VALIDATION</div>
-            <div class="architecture-node">TARGET</div>
-            <div class="architecture-arrow" aria-hidden="true">|<br>v</div>
-            <div class="architecture-node mint">MUSE / OPTIMIZER</div>
-            <div class="architecture-arrow" aria-hidden="true">|<br>v</div>
-            <div class="architecture-node">PHYSICS ENGINE</div>
-            <div class="architecture-arrow" aria-hidden="true">|<br>v</div>
-            <div class="architecture-node gold">INDEPENDENT VERIFIER</div>
-            <div class="architecture-arrow" aria-hidden="true">|<br>v</div>
-            <div class="architecture-node">REDESIGN / STOP</div>
-        </div>
-        """,
+        '<div class="architecture-card">'
+        '<div class="architecture-title">'
+        'DESIGN TO VALIDATION'
+        '</div>'
+        '<div class="architecture-node">'
+        'TARGET'
+        '</div>'
+        '<div class="architecture-arrow">'
+        'v'
+        '</div>'
+        '<div class="architecture-node mint">'
+        'MUSE / OPTIMIZER'
+        '</div>'
+        '<div class="architecture-arrow">'
+        'v'
+        '</div>'
+        '<div class="architecture-node">'
+        'PHYSICS ENGINE'
+        '</div>'
+        '<div class="architecture-arrow">'
+        'v'
+        '</div>'
+        '<div class="architecture-node gold">'
+        'INDEPENDENT VERIFIER'
+        '</div>'
+        '<div class="architecture-arrow">'
+        'v'
+        '</div>'
+        '<div class="architecture-node">'
+        'REDESIGN / STOP'
+        '</div>'
+        '</div>',
         unsafe_allow_html=True,
     )
 
@@ -1297,50 +1201,50 @@ with left:
 # RIGHT AGENT TIMELINE
 # ============================================================
 
-
 with right:
-
     st.header(
         "PLAN > ACT > PHYSICS > VERIFY > REDESIGN"
     )
 
     if not run_button:
+        with st.container(
+            border=True,
+        ):
+            st.caption(
+                "AGENT READY"
+            )
 
-        st.markdown(
-            """
-            <div class="spiral-card">
-                <div class="stage">
-                    AGENT READY
-                </div>
-                Scientific-design pipeline initialized.
-                <br><br>
-                <span class="stage-label">NEXT ACTION</span>
-                Choose a target and execution mode,
-                then select <b>Run SpiralAI</b>.
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+            st.write(
+                "Scientific-design pipeline initialized."
+            )
+
+            st.markdown(
+                "**Next action:** Choose a target and execution "
+                "mode, then select **Run SpiralAI**."
+            )
+
 
     # ========================================================
     # LIVE MUSE MODE
     # ========================================================
 
     elif mode == "Live Muse":
+        with st.container(
+            border=True,
+        ):
+            st.caption(
+                "LIVE AGENT"
+            )
 
-        st.markdown(
-            '<div class="spiral-card">'
-            '<div class="stage">LIVE AGENT</div>'
-            '<br>'
-            'Model: <b>meta-models/muse-spark-open-1026</b>'
-            '<br><br>'
-            'Muse proposes candidates. '
-            'Deterministic physics calculates performance. '
-            'The independent verifier decides whether the '
-            'evidence supports the result.'
-            '</div>',
-            unsafe_allow_html=True,
-        )
+            st.markdown(
+                f"**Model:** `{MODEL}`"
+            )
+
+            st.write(
+                "Muse proposes candidates. Deterministic physics "
+                "calculates performance. The independent verifier "
+                "decides whether the evidence supports the result."
+            )
 
         try:
             with st.spinner(
@@ -1349,12 +1253,8 @@ with right:
                 report = run_iterative_design(
                     target_wh_kg=target,
                 )
-        except Exception as exc:
-            st.warning(
-                "Live Muse is currently unavailable. "
-                "Switching to provenance-backed replay."
-            )
 
+        except Exception as exc:
             records = read_jsonl_records(
                 MUSE_BENCHMARK
             )
@@ -1366,64 +1266,22 @@ with right:
 
             if selected is None:
                 st.error(
-                    "No saved Muse trajectory is available for "
-                    f"{target:.2f} Wh/kg. "
-                    "Replay targets currently available: "
-                    "25, 50, and 100 Wh/kg."
+                    "Live Muse is unavailable and no saved trajectory "
+                    f"exists for {target:.2f} Wh/kg."
                 )
 
                 st.caption(
-                    f"Live error: {type(exc).__name__}"
+                    "Available replay targets: 25, 50, and 100 Wh/kg."
+                )
+
+                st.caption(
+                    f"Live error type: {type(exc).__name__}"
                 )
 
             else:
-                st.markdown(
-                    '<div class="spiral-card warning-card">'
-                    '<div class="stage">PROVENANCE FALLBACK</div>'
-                    '<br>'
-                    'Displaying a previously recorded real Muse '
-                    'trajectory because the live API is unavailable.'
-                    '</div>',
-                    unsafe_allow_html=True,
-                )
-
-                st.caption(
-                    f"Run ID: {selected['run_id']}"
-                )
-
-                st.caption(
-                    f"Model: {selected['model']}"
-                )
-
-                for item in selected.get(
-                    "history",
-                    [],
-                ):
-                    render_iteration(item)
-
-                st.divider()
-
-                f1, f2, f3 = st.columns(3)
-
-                f1.metric(
-                    "Final status",
-                    selected["final_status"],
-                )
-
-                f2.metric(
-                    "Iterations",
-                    selected["iterations"],
-                )
-
-                f3.metric(
-                    "Evidence",
-                    selected["evidence_type"],
-                )
-
-                st.caption(
-                    "Replay mode uses provenance captured from an "
-                    "earlier live Muse execution. No synthetic "
-                    "trajectory was generated."
+                render_replay(
+                    selected,
+                    fallback=True,
                 )
 
         else:
@@ -1433,11 +1291,13 @@ with right:
             )
 
             for item in history:
-                render_iteration(item)
+                render_iteration(
+                    item
+                )
 
             st.divider()
 
-            status = report.get(
+            final_status = report.get(
                 "final_status",
                 "UNKNOWN",
             )
@@ -1447,45 +1307,54 @@ with right:
                 len(history),
             )
 
-            m1, m2, m3 = st.columns(3)
-
-            m1.metric(
-                "Final status",
-                status,
+            result1, result2, result3 = (
+                st.columns(3)
             )
 
-            m2.metric(
+            display_status = {
+                "MORE_VALIDATION_REQUIRED": "VALIDATION REQUIRED",
+                "TARGET_UNREACHABLE_WITHIN_SCREENING_BOUNDARY": "UNREACHABLE",
+            }.get(
+                final_status,
+                final_status,
+            )
+
+            result1.metric(
+                "Final status",
+                display_status,
+            )
+
+            result2.metric(
                 "Agent iterations",
                 iterations,
             )
 
-            m3.metric(
+            result3.metric(
                 "Evidence",
-                "THEORETICAL_SIMULATION",
+                "THEORETICAL",
             )
 
-            if status == "TARGET_REACHED":
+            st.caption(
+                "Evidence classification: `THEORETICAL_SIMULATION`"
+            )
+
+            if final_status == "TARGET_REACHED":
                 st.success(
-                    "The requested target was reached in "
-                    "the current theoretical screening model."
+                    "The requested target was reached in the "
+                    "current theoretical screening model."
                 )
 
-            elif status == "MORE_VALIDATION_REQUIRED":
+            elif final_status == "MORE_VALIDATION_REQUIRED":
                 st.warning(
-                    "Muse proposed a candidate requiring evidence "
-                    "beyond the current analytical screening boundary."
+                    "MORE_VALIDATION_REQUIRED: "
+                    "The candidate exceeds the current "
+                    "10% analytical screening boundary."
                 )
 
-            elif status in {
-                "MAX_ITERATIONS_REACHED",
-                "NO_IMPROVEMENT",
-                "TARGET_NOT_REACHED",
-                "INVALID_MODEL_OUTPUT",
-                "INVALID_RESULT",
-            }:
+            else:
                 st.warning(
-                    "The agent did not establish a verified solution "
-                    "within the current run."
+                    "The current run did not establish a verified "
+                    "solution for the requested target."
                 )
 
             st.caption(
@@ -1495,36 +1364,33 @@ with right:
 
 
     # ========================================================
-    # DETERMINISTIC MODE
+    # DETERMINISTIC OPTIMIZATION
     # ========================================================
 
     elif mode == "Deterministic optimization":
-
         with st.spinner(
             "Running verified minimum-strain search..."
         ):
-
             result = find_minimum_strain(
                 target_wh_kg=target,
             )
 
-        objective_html = (
-            '<div class="spiral-card">'
-            '<div class="stage">OBJECTIVE</div>'
-            '<br>'
-            'Find the <b>lowest verified strain</b> satisfying '
-            f'<b>{target:.2f} Wh/kg</b> '
-            'within the current 10% analytical screening boundary.'
-            '</div>'
-        )
+        with st.container(
+            border=True,
+        ):
+            st.caption(
+                "OBJECTIVE"
+            )
 
-        st.markdown(
-            objective_html,
-            unsafe_allow_html=True,
-        )
+            st.markdown(
+                f"""
+Find the **lowest verified strain** satisfying
+**{target:.2f} Wh/kg** within the current
+**10% analytical screening boundary**.
+"""
+            )
 
         for item in result.history:
-
             physics = item.get(
                 "physics_result",
                 {},
@@ -1536,34 +1402,24 @@ with right:
             )
 
             normalized = {
-                "iteration":
-                    item.get(
-                        "iteration",
-                        "?",
-                    ),
-
+                "iteration": item.get(
+                    "iteration",
+                    "?",
+                ),
                 "proposal": {
-                    "strain_percent":
-                        item.get(
+                    "strain_percent": item.get(
+                        "strain_percent",
+                        physics.get(
                             "strain_percent",
-                            physics.get(
-                                "strain_percent",
-                                "N/A",
-                            ),
+                            "N/A",
                         ),
-
-                    "reason":
-                        (
-                            "Deterministic minimum-strain "
-                            "search step."
-                        ),
+                    ),
+                    "reason": (
+                        "Deterministic minimum-strain search step."
+                    ),
                 },
-
-                "physics_result":
-                    physics,
-
-                "verification":
-                    verification,
+                "physics_result": physics,
+                "verification": verification,
             }
 
             render_iteration(
@@ -1572,11 +1428,11 @@ with right:
 
         st.divider()
 
-        a, b, c = st.columns(
-            3
+        final1, final2, final3 = (
+            st.columns(3)
         )
 
-        a.metric(
+        final1.metric(
             "Final status",
             result.status,
         )
@@ -1585,53 +1441,47 @@ with right:
             result.minimum_strain_percent
             is not None
         ):
-
-            b.metric(
+            final2.metric(
                 "Minimum verified strain",
                 f"{result.minimum_strain_percent:.4f}%",
             )
 
-            c.metric(
+            final3.metric(
                 "Verified energy",
                 f"{result.verified_energy_Wh_kg:.4f} Wh/kg",
             )
 
             st.success(
-                "Verified target achieved within the "
-                "current analytical screening boundary."
+                "Verified target achieved within the current "
+                "analytical screening boundary."
             )
 
         else:
-
-            b.metric(
+            final2.metric(
                 "Minimum verified strain",
                 "N/A",
             )
 
-            c.metric(
+            final3.metric(
                 "Verified energy",
                 "N/A",
             )
 
         if (
             result.status
-            ==
-            "TARGET_UNREACHABLE_WITHIN_SCREENING_BOUNDARY"
+            == "TARGET_UNREACHABLE_WITHIN_SCREENING_BOUNDARY"
         ):
-
             st.warning(
-                "The requested target cannot be verified "
-                "within the current 10% analytical "
-                "screening boundary."
+                "The requested target cannot be verified within "
+                "the current 10% analytical screening boundary."
             )
 
 
     # ========================================================
-    # PROVENANCE REPLAY MODE
+    # PROVENANCE REPLAY
     # ========================================================
 
     elif mode == "Provenance replay":
-
         records = read_jsonl_records(
             MUSE_BENCHMARK
         )
@@ -1642,70 +1492,19 @@ with right:
         )
 
         if selected is None:
-
             st.warning(
                 "No canonical Muse trajectory exists "
                 f"for {target:.2f} Wh/kg."
             )
 
             st.caption(
-                "Available replay targets: "
-                "25, 50, and 100 Wh/kg."
+                "Available replay targets: 25, 50, and 100 Wh/kg."
             )
 
         else:
-
-            st.success(
-                "Loaded provenance-backed Muse trajectory. "
-                "No live API call was required."
-            )
-
-            metadata_left, metadata_right = (
-                st.columns(2)
-            )
-
-            metadata_left.caption(
-                f"Run ID: {selected['run_id']}"
-            )
-
-            metadata_right.caption(
-                f"Model: {selected['model']}"
-            )
-
-            for item in selected.get(
-                "history",
-                [],
-            ):
-
-                render_iteration(
-                    item
-                )
-
-            st.divider()
-
-            x, y, z = st.columns(
-                3
-            )
-
-            x.metric(
-                "Final status",
-                selected[
-                    "final_status"
-                ],
-            )
-
-            y.metric(
-                "Iterations",
-                selected[
-                    "iterations"
-                ],
-            )
-
-            z.metric(
-                "Evidence",
-                selected[
-                    "evidence_type"
-                ],
+            render_replay(
+                selected,
+                fallback=False,
             )
 
 
@@ -1713,39 +1512,34 @@ with right:
 # SCIENTIFIC BOUNDARY
 # ============================================================
 
-
 st.divider()
-
 
 st.markdown(
     """
-    ### Scientific Boundary
+### Scientific Boundary
 
-    SpiralAI currently performs
-    theoretical/simulated screening only.
+SpiralAI currently performs theoretical or simulated
+screening only.
 
-    Results are **not**:
+Results are **not**:
 
-    - experimental measurements
-    - demonstrated device performance
-    - cycle-life evidence
-    - manufacturability proof
-    - evidence that graphene mechanical storage
-      replaces lithium-ion batteries
+- experimental measurements
+- demonstrated device performance
+- cycle-life evidence
+- manufacturability proof
+- evidence that graphene mechanical storage replaces lithium-ion batteries
 
-    Higher-fidelity validation may require:
+Higher-fidelity validation may require:
 
-    - finite-element analysis
-    - molecular dynamics
-    - fatigue modelling
-    - fabrication
-    - mechanical cycling
-    - experiment
-    """
+- finite-element analysis
+- molecular dynamics
+- fatigue modelling
+- fabrication
+- mechanical cycling
+- experiment
+"""
 )
 
-
 st.caption(
-    "SpiralAI | "
-    "Meta Global AI Developer Hackathon 2026"
+    "SpiralAI | Meta Global AI Developer Hackathon 2026"
 )
