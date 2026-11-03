@@ -21,8 +21,10 @@ from provenance.run_log import read_jsonl_records
 
 MODEL = "meta-models/muse-spark-open-1026"
 
-MUSE_BENCHMARK = Path(
-    "results/muse_trajectory_benchmark.jsonl"
+MUSE_BENCHMARK = (
+    Path(__file__).resolve().parent.parent
+    / "results"
+    / "muse_trajectory_benchmark.jsonl"
 )
 
 

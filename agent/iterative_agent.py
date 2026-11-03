@@ -32,10 +32,32 @@ MAX_ITERATIONS = 6
 MAX_SCREENING_STRAIN_PERCENT = 10.0
 
 
-client = OpenAI(
-    api_key=os.environ["BASETEN_API_KEY"],
-    base_url="https://inference.baseten.co/v1",
-)
+_client = None
+
+
+def get_client() -> OpenAI:
+    """Create the Baseten client only when Live Muse is used."""
+
+    global _client
+
+    if _client is None:
+        api_key = os.environ.get("BASETEN_API_KEY")
+
+        if not api_key:
+            raise RuntimeError(
+                "BASETEN_API_KEY is not set. Live Muse mode is "
+                "unavailable; use Deterministic optimization or "
+                "Provenance replay."
+            )
+
+        _client = OpenAI(
+            api_key=api_key,
+            base_url="https://inference.baseten.co/v1",
+            timeout=45.0,
+            max_retries=1,
+        )
+
+    return _client
 
 
 def parse_json_response(text: str) -> dict:
@@ -128,7 +150,7 @@ Return only valid JSON with these keys:
 }}
 """
 
-    response = client.chat.completions.create(
+    response = get_client().chat.completions.create(
         model=MODEL,
         messages=[
             {
@@ -138,7 +160,7 @@ Return only valid JSON with these keys:
         ],
     )
 
-    text = response.choices[0].message.content
+    text = response.choices[0].message.content or ""
 
     return parse_json_response(text)
 

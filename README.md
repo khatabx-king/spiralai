@@ -1,4 +1,4 @@
-﻿# SpiralAI
+# SpiralAI
 
 ## AI designs. Physics verifies.
 
@@ -411,7 +411,7 @@ spiralai/
 
 ### Requirements
 
-- Python 3.9+
+- Python 3.10+
 - OpenAI-compatible Python SDK
 - Streamlit
 - pytest
@@ -420,7 +420,7 @@ spiralai/
 Install:
 
 ```bash
-python -m pip install openai pytest streamlit
+python -m pip install -r requirements.txt
 ```
 
 Configure `BASETEN_API_KEY` as an environment variable. Never commit API keys to GitHub.

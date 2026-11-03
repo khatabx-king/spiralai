@@ -18,10 +18,32 @@ from agent.tools import evaluate_design
 
 MODEL = "meta-models/muse-spark-open-1026"
 
-client = OpenAI(
-    api_key=os.environ["BASETEN_API_KEY"],
-    base_url="https://inference.baseten.co/v1",
-)
+_client = None
+
+
+def get_client() -> OpenAI:
+    """Create the Baseten client only when Live Muse is used."""
+
+    global _client
+
+    if _client is None:
+        api_key = os.environ.get("BASETEN_API_KEY")
+
+        if not api_key:
+            raise RuntimeError(
+                "BASETEN_API_KEY is not set. Live Muse mode is "
+                "unavailable; use Deterministic optimization or "
+                "Provenance replay."
+            )
+
+        _client = OpenAI(
+            api_key=api_key,
+            base_url="https://inference.baseten.co/v1",
+            timeout=45.0,
+            max_retries=1,
+        )
+
+    return _client
 
 
 def ask_muse_for_design(target_wh_kg: float = 25.0) -> dict:
@@ -51,7 +73,7 @@ Return ONLY valid JSON:
 }}
 """
 
-    response = client.chat.completions.create(
+    response = get_client().chat.completions.create(
         model=MODEL,
         messages=[
             {
@@ -61,7 +83,7 @@ Return ONLY valid JSON:
         ],
     )
 
-    text = response.choices[0].message.content.strip()
+    text = (response.choices[0].message.content or "").strip()
 
     # Remove markdown fences if the model adds them.
     text = re.sub(r"^```(?:json)?\s*", "", text)
